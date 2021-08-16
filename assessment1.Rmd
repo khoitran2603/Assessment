@@ -14,21 +14,38 @@ R Markdown documents provide ***quick, reproducible reporting*** from R. You wri
 
 [Markdown Basics](https://rmarkdown.rstudio.com/lesson-8.html)
 
+
+### Part 1
 ```{r}
 #Loading Packages
 library(tidyverse)
-library(skimr)
+library(knitr)
 
+#Create variable with dataset
 fastfood <- read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2018/2018-09-04/fastfood_calories.csv')
 
-write_csv(fastfood,'fastfood_data.csv')
+#Display the first 10 rows of the dataset
+fastfood %>% 
+  head(10) 
 
-fastfood %>% glimpse()
-fastfood %>% skim()
+#Display the first 10 rows of the dataset and the first 5 variables (columns)
+kable(head(fastfood[1:10,1:5])) 
 
-fastfood %>% head(10)
+#Display the observations that has more than 1000 calories
+fastfood %>% 
+  filter(calories > 1000) 
+
+#Save observations with more than 40 in total_fat and more than 80 in total_carb
+
+dont_eat_this <- fastfood %>% 
+  filter(total_fat > 40) %>%
+  filter(total_carb > 80)
+#fastfood %>% 
+  #filter(total_fat > 40 & total_carb > 80)
+
+#Display observations from restaurant Mcdonalds
+fastfood %>%
+  filter(restaurant == "Mcdonalds")
+
 ```
 
-=======
-R Markdown documents provide ***quick, reproducible reporting*** from R. You write your document in markdown and embed executable R code chunks with the knitr syntax. You can update your document at any time by re-knitting the code chunks. You can then convert your document into several common formats
->>>>>>> 74111b14dd73ef840fe63054178d9c7424afb192
