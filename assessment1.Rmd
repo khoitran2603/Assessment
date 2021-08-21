@@ -20,6 +20,9 @@ R Markdown documents provide ***quick, reproducible reporting*** from R. You wri
 #Loading Packages
 library(tidyverse)
 library(knitr)
+library(skimr)
+library(scales)
+library(lubridate)
 
 #Create variable with dataset
 fastfood <- read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2018/2018-09-04/fastfood_calories.csv')
@@ -48,4 +51,60 @@ fastfood %>%
   filter(restaurant == "Mcdonalds")
 
 ```
+
+### Part 2
+```{r}
+# Display the types of variables in the dataset using `skimr` package
+skim(fastfood)
+
+# Show the count of observations for each restaurant. 
+fastfood %>% 
+  count(restaurant)
+
+# Using grouppings (group_by()), summarise and display the average number of calories for each restaurant.
+fastfood %>%
+  group_by(restaurant) %>%
+  summarise(average_cal = mean(calories))
+
+# Add a variable to the dataset, which calculates the average calories per type of restaurant and call it `average_calories` 
+fastfood %>%
+  group_by(restaurant) %>%
+  mutate(average_calories = mean(calories))
+
+# Display the data vis of total fat per each type of restaurant. Write a narration (2-3 sentences) why you believe this type of data viz presents such information best. **
+theme_set(theme_light())
+
+fastfood %>% ggplot(
+  aes(x=reorder(restaurant, -total_fat), 
+      y=total_fat)
+)+
+  geom_col() +
+  labs(x="Restaurant", 
+       y="Total Fats", 
+       title="Total Fat Per Each Type Of Restaurant"
+       )+
+  coord_flip()
+```
+
+Based on the menu of each restaurants, Burger king has the highest total fat in their menu compares to Chick Fil-A, which has the lowest total fat. Taco Bell's menu just slightly under Burger King in total fat, while Subway, McDonalds and Sonic have relatively same amount of total fat in their menu.
+
+```{r}
+# Add a variable to the dataset, which calculates the maximum total fat per type of restaurant and call it `max_total_fat` 
+fastfood %>%
+  group_by(restaurant) %>%
+  mutate(max_total_fat = max(total_fat))
+
+# Use observations for Mcdonalds to plot sugar variable against protein with `geom_point()` 
+fastfood %>%
+  filter(restaurant == "Mcdonalds") %>% 
+  ggplot(
+  aes(x=sugar,
+      y=protein)
+)+
+  geom_point()
+```
+### Part 3
+
+
+
 
