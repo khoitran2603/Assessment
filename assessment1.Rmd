@@ -23,6 +23,7 @@ library(knitr)
 library(skimr)
 library(scales)
 library(lubridate)
+library(forcats)
 
 #Create variable with dataset
 fastfood <- read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2018/2018-09-04/fastfood_calories.csv')
@@ -39,12 +40,8 @@ fastfood %>%
   filter(calories > 1000) 
 
 #Save observations with more than 40 in total_fat and more than 80 in total_carb
-
 dont_eat_this <- fastfood %>% 
-  filter(total_fat > 40) %>%
-  filter(total_carb > 80)
-#fastfood %>% 
-  #filter(total_fat > 40 & total_carb > 80)
+  filter(total_fat > 40 & total_carb > 80)
 
 #Display observations from restaurant Mcdonalds
 fastfood %>%
@@ -82,8 +79,8 @@ fastfood %>% ggplot(
   labs(x="Restaurant", 
        y="Total Fats", 
        title="Total Fat Per Each Type Of Restaurant"
-       )+
-  coord_flip()
+       )
+  #coord_flip()
 ```
 
 Based on the menu of each restaurants, Burger king has the highest total fat in their menu compares to Chick Fil-A, which has the lowest total fat. Taco Bell's menu just slightly under Burger King in total fat, while Subway, McDonalds and Sonic have relatively same amount of total fat in their menu.
@@ -104,7 +101,26 @@ fastfood %>%
   geom_point()
 ```
 ### Part 3
+```{r}
+# Identify variable(s) which should be factors and transform their type into a factor variable.
+fastfood <- fastfood %>%
+  mutate(restaurant=as_factor(restaurant))
 
+# Create two new variables:
+fastfood %>% 
+  mutate(calories_type=cut_number(calories, n=3, labels=c("low", "med", "high"), sort = TRUE)) 
+
+#Create a dataviz that shows the distribution of `calories_type` in food items for each type of restaurant. Think carefully about the choice of data viz. Use facets, coordinates and theme layers to make your data viz visually appealing and meaningful. Use factors related data viz functions.
+
+# The second variable should show the percentage of `trans_fat` in `total_fat`. Add the variable to the dataset and call it `trans_fat_percent`. Do not forget to save the updated dataset. 
+
+# Create a dataviz that shows the distribution of `trans_fat` in food items for each type of restaurant. Think carefully about the choice of data viz. Use facets, coordinates and theme layers to make your data viz visually appealing and meaningful.
+
+# Calculate and show the average (mean)  `total_fat` for each type of restaurant. No need to save it as a variable.
+
+# And create a dataviz that allow to compare different restaurants on this variable (`total_fat`). You can present it on one dataviz (= no facets). 
+
+```
 
 
 
