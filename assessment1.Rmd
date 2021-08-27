@@ -89,7 +89,7 @@ This column graph present such information best, because we have two variables: 
 
 ```{r}
 # Add a variable to the dataset, which calculates the maximum total fat per type of restaurant and call it `max_total_fat` 
-fastfood %>%
+fastfood <- fastfood %>%
   group_by(restaurant) %>%
   mutate(max_total_fat = max(total_fat)) %>%
   ungroup()
