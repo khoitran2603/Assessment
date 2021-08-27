@@ -23,7 +23,6 @@ library(knitr)
 library(skimr)
 library(scales)
 library(lubridate)
-library(forcats)
 
 
 #Create variable with dataset
@@ -34,7 +33,7 @@ fastfood %>%
   head(10) 
 
 #Display the first 10 rows of the dataset and the first 5 variables (columns)
-kable(head(fastfood[1:10,1:5])) 
+kable(fastfood[1:10,1:5])
 
 #Display the observations that has more than 1000 calories
 fastfood %>% 
@@ -62,12 +61,14 @@ fastfood %>%
 # Using grouppings (group_by()), summarise and display the average number of calories for each restaurant.
 fastfood %>%
   group_by(restaurant) %>%
-  summarise(average_cal = mean(calories))
+  summarise(average_cal = mean(calories)) %>%
+  ungroup()
 
 # Add a variable to the dataset, which calculates the average calories per type of restaurant and call it `average_calories` 
-fastfood %>%
+fastfood <- fastfood %>%
   group_by(restaurant) %>%
-  mutate(average_calories = mean(calories))
+  mutate(average_calories = mean(calories)) %>%
+  ungroup()
 
 # Display the data vis of total fat per each type of restaurant. Write a narration (2-3 sentences) why you believe this type of data viz presents such information best. **
 theme_set(theme_light())
@@ -81,16 +82,17 @@ fastfood %>% ggplot(
        y="Total Fats", 
        title="Total Fat Per Each Type Of Restaurant"
        )
-  #coord_flip()
+
 ```
 
-Based on the menu of each restaurants, Burger king has the highest total fat in their menu compares to Chick Fil-A, which has the lowest total fat. Taco Bell's menu just slightly under Burger King in total fat, while Subway, McDonalds and Sonic have relatively same amount of total fat in their menu.
+This column graph present such information best, because we have two variables: "restaurant" which is a discrete or catagory variable, while "total_fat" is a continuous (numeric) variable with differents values.
 
 ```{r}
 # Add a variable to the dataset, which calculates the maximum total fat per type of restaurant and call it `max_total_fat` 
 fastfood %>%
   group_by(restaurant) %>%
-  mutate(max_total_fat = max(total_fat))
+  mutate(max_total_fat = max(total_fat)) %>%
+  ungroup()
 
 # Use observations for Mcdonalds to plot sugar variable against protein with `geom_point()` 
 fastfood %>%
@@ -105,37 +107,22 @@ fastfood %>%
 ```{r}
 # Identify variable(s) which should be factors and transform their type into a factor variable.
 fastfood <- fastfood %>%
-  mutate(restaurant=as_factor(restaurant))
-<<<<<<< HEAD
-=======
-
-# Create two new variables:
-fastfood %>% 
-  mutate(calories_type=cut_number(calories, n=3, labels=c("low", "med", "high"), sort = TRUE)) 
-
-#Create a dataviz that shows the distribution of `calories_type` in food items for each type of restaurant. Think carefully about the choice of data viz. Use facets, coordinates and theme layers to make your data viz visually appealing and meaningful. Use factors related data viz functions.
->>>>>>> cca3f5a2b69f4346156414baef73f15d056f09a5
-
-# The second variable should show the percentage of `trans_fat` in `total_fat`. Add the variable to the dataset and call it `trans_fat_percent`. Do not forget to save the updated dataset. 
-
-# Create a dataviz that shows the distribution of `trans_fat` in food items for each type of restaurant. Think carefully about the choice of data viz. Use facets, coordinates and theme layers to make your data viz visually appealing and meaningful.
-
-# Calculate and show the average (mean)  `total_fat` for each type of restaurant. No need to save it as a variable.
-
-# And create a dataviz that allow to compare different restaurants on this variable (`total_fat`). You can present it on one dataviz (= no facets). 
-
-```
+  group_by(restaurant) %>%
+  mutate(restaurant=as_factor(restaurant)) %>%
+  ungroup()
 
 # Use `calories` variable for `cut_number()` function to split it into 3 categories `n=3`, add labels `labels=c("low", "med", "high")` and make the dataset ordered. 
 fastfood <- fastfood %>% 
   mutate(calories_type=cut_number(calories, n=3, labels=c("low", "med", "high"))) %>%
   group_by(restaurant) %>%
-  arrange(desc(calories), .by_group = TRUE)
+  arrange(desc(calories), .by_group = TRUE) %>%
+  ungroup()
 
 #Create a dataviz that shows the distribution of `calories_type` in food items for each type of restaurant. Think carefully about the choice of data viz. Use facets, coordinates and theme layers to make your data viz visually appealing and meaningful. Use factors related data viz functions.
 fastfood %>% 
   group_by(restaurant, calories_type) %>% 
   summarise(n=n()) %>%
+  ungroup() %>%
   mutate(restaurant = fct_reorder(restaurant, -n)) %>%
   ggplot(
   aes(x=restaurant,
@@ -149,19 +136,41 @@ fastfood %>%
 
 # The second variable should show the percentage of `trans_fat` in `total_fat`. Add the variable to the dataset and call it `trans_fat_percent`. Do not forget to save the updated dataset. 
 fastfood <- fastfood %>%
-  mutate(trans_fat_percent= round(((trans_fat/total_fat)*100), 2))
+  mutate(trans_fat_percent= round(((trans_fat/total_fat)*100),2))
 
 # Create a dataviz that shows the distribution of `trans_fat` in food items for each type of restaurant. Think carefully about the choice of data viz. Use facets, coordinates and theme layers to make your data viz visually appealing and meaningful.
-fastfood <- fastfood %>% 
-  mutate(trans_fat_percent_type=cut_number(trans_fat_percent, n=2))
+fastfood %>%
+  filter(!is.na(trans_fat)) %>%
+  mutate(trans_fat=as_factor(trans_fat)) %>%
+  mutate(trans_fat = fct_lump(trans_fat, 5, other_level = "Over 2"), sort = TRUE) %>%
+  group_by(restaurant, trans_fat) %>%
+  summarise(n=n()) %>%
+  mutate(restaurant = fct_reorder(restaurant, -n)) %>%
+  ggplot(
+  aes(x=restaurant,
+      y=n,
+      fill=trans_fat)
+  )+
+  geom_col()+
+  labs(x="Restaurant", y="Number of food items")+
+  coord_flip()+
+  facet_wrap(~trans_fat, nrow=2)
 
 # Calculate and show the average (mean)  `total_fat` for each type of restaurant. No need to save it as a variable.
-fastfood %>% 
-  group_by(restaurant) %>%
-  mutate(average_total_fat=mean(total_fat))
+fastfood %>%
+  mutate(average_total_fat=mean(total_fat)) %>%
 
 # And create a dataviz that allow to compare different restaurants on this variable (`total_fat`). You can present it on one dataviz (= no facets). 
-
+  mutate(restaurant = fct_reorder(restaurant, -average_total_fat)) %>%
+  ggplot(
+    aes(x=restaurant,
+        y=average_total_fat)
+  )+
+  geom_col()+
+  labs(x="Restaurant", 
+       y="Average Total Fat", 
+       title="Average Total Fat Per Each Type Of Restaurant"
+       ) 
 ```
 
 
