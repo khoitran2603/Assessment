@@ -23,6 +23,7 @@ library(knitr)
 library(skimr)
 library(scales)
 library(lubridate)
+library(forcats)
 
 
 #Create variable with dataset
@@ -105,7 +106,25 @@ fastfood %>%
 # Identify variable(s) which should be factors and transform their type into a factor variable.
 fastfood <- fastfood %>%
   mutate(restaurant=as_factor(restaurant))
+<<<<<<< HEAD
+=======
 
+# Create two new variables:
+fastfood %>% 
+  mutate(calories_type=cut_number(calories, n=3, labels=c("low", "med", "high"), sort = TRUE)) 
+
+#Create a dataviz that shows the distribution of `calories_type` in food items for each type of restaurant. Think carefully about the choice of data viz. Use facets, coordinates and theme layers to make your data viz visually appealing and meaningful. Use factors related data viz functions.
+>>>>>>> cca3f5a2b69f4346156414baef73f15d056f09a5
+
+# The second variable should show the percentage of `trans_fat` in `total_fat`. Add the variable to the dataset and call it `trans_fat_percent`. Do not forget to save the updated dataset. 
+
+# Create a dataviz that shows the distribution of `trans_fat` in food items for each type of restaurant. Think carefully about the choice of data viz. Use facets, coordinates and theme layers to make your data viz visually appealing and meaningful.
+
+# Calculate and show the average (mean)  `total_fat` for each type of restaurant. No need to save it as a variable.
+
+# And create a dataviz that allow to compare different restaurants on this variable (`total_fat`). You can present it on one dataviz (= no facets). 
+
+```
 
 # Use `calories` variable for `cut_number()` function to split it into 3 categories `n=3`, add labels `labels=c("low", "med", "high")` and make the dataset ordered. 
 fastfood <- fastfood %>% 
