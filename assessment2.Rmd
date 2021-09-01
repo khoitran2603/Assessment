@@ -1,0 +1,29 @@
+---
+title: "Assignment2"
+author: "Khoi Tran"
+date: "01/09/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# *Khoi Tran*
+## **s4664074** 
+
+```{r}
+library(tidyverse)
+library(skimr)
+
+data <- read_csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2018/2018-11-20/thanksgiving_meals.csv")
+
+#predict income base on menu
+#pick which variable is valued to your analysis
+#use whole dataset a portion of it
+#regression (predict number or category): letter -> number/ parse_number(family_income)
+#filer NA variable when predict category
+#select(-) exclude column
+
+```
+
