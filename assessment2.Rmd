@@ -1,16 +1,23 @@
----
-title: "Assignment2"
-author: "Khoi Tran"
-date: "01/09/2021"
-output: html_document
----
+## Khoi Tran - s4664074
+
+***
+
+# Assignment 2
+
+***
+
+### 1. Display the first 10 rows of the dataset using `kable()` function (1 marks). 
+### 2. Using `skim()` display the summary of variables. 
+### 3. Use `fct_reorder` and `parse_number` functions to create a factor variable `family_income`(2 mark).
+### 4. What is the number of people who celebrate?
+### 5. What are categories and insights for each main dish served and the method it is prepared?
+### 6. Create 3 different data viz showing insights for main dish served and the method. Provide your own legend and use themes.
+### 7. How many use cranberry sauce? How many use gravy?
+### 8. What is the distribution of those who celebrate across income ranges. Create a data viz.
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
-
-# *Khoi Tran*
-## **s4664074** 
 
 ```{r}
 library(tidyverse)
