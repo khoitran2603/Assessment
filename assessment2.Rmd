@@ -20,13 +20,56 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ```{r}
+#Loading library
 library(tidyverse)
 library(skimr)
+library(randomForest)
+library(knitr)
+library(scales)
+library(lubridate)
 
-data <- read_csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2018/2018-11-20/thanksgiving_meals.csv")
+meals <- read_csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2018/2018-11-20/thanksgiving_meals.csv")
 
-#predict income base on menu
-#pick which variable is valued to your analysis
+kable(meals[1:10,])
+
+skim(meals)
+
+meals %>% count(main_dish)
+meals %>% count(age)
+meals %>% count(us_region)
+meals %>% count(main_prep)
+meals %>% count(stuffing)
+meals %>% count(cranberry)
+meals %>% count(gravy)
+meals %>% count(family_income)
+meals %>% count(community_type)
+meals %>% count(kids_table_age)
+meals %>% count(gender)
+# To predict a family income (numeric variable) based on their menu, we could use "age" variable or "kids_table_age" variable to predict "family_income" variable. All of them are character type and we want to transform them into numeric type.
+# TO predict a community type or US_region (category variables) based on their menu, we could use different variables such as "main_dish", "celebrate", "main_prep", "gender", "age", "family_income", "kids_table_age". All of them are character type, which we can transform them into category type. 
+
+meals %>%
+  filter(!is.na(family_income) & family_income != "Prefer not to answer") %>%
+  mutate(family_income = as_factor(fct_reorder(family_income, parse_number(family_income))))
+  
+meals %>% count(celebrate)
+
+meals %>% 
+  filter(!is.na(main_dish) & 
+         main_dish != "I don't know" & 
+         main_dish != "Tofurkey" &
+         main_dish != "Turducken" ) %>%
+  count(main_dish) 
+# Main dish has 5 categories: Chicken, Ham/Pork, Roast beef, Turkey and Other. Turkey has the highest number of observations
+
+meals %>% 
+  filter(!is.na(main_prep) & 
+         main_prep != "I don't know") %>%
+  count(main_prep) 
+# Main preparation has 4 categories: Baked, Fried, Roasted and Other. Baked and Roasted have the most number of observations
+
+
+
 #use whole dataset a portion of it
 #regression (predict number or category): letter -> number/ parse_number(family_income)
 #filer NA variable when predict category
