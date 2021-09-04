@@ -1948,7 +1948,6 @@ meals_main %&gt;% count(gravy)</code></pre>
 ##  9 $150,000 to $174,999    40
 ## 10 $175,000 to $199,999    27</code></pre>
 <pre class="r"><code>meals_income_factor %&gt;%
-  #mutate(family_income = fct_lump(family_income, 6, other_level = &quot;$125,000 to $199,999&quot; ), sort = TRUE) %&gt;%
   group_by(family_income, celebrate) %&gt;%
   summarise(n=n()) %&gt;%
   mutate(family_income = fct_reorder(family_income, -n)) %&gt;%
@@ -2006,37 +2005,797 @@ meals_type_value %&gt;% pairwise_cor(value, id, sort = TRUE)</code></pre>
   filter(!is.na(family_income) &amp; family_income != &quot;Prefer not to answer&quot;) %&gt;%
   mutate(family_income_num = parse_number(family_income))
 
-randomForest(family_income_num~celebrate + main_dish + main_prep, data=meals_income_num, na.action = na.omit)</code></pre>
+skim(meals_income_num)</code></pre>
+<table>
+<caption>Data summary</caption>
+<tbody>
+<tr class="odd">
+<td align="left">Name</td>
+<td align="left">meals_income_num</td>
+</tr>
+<tr class="even">
+<td align="left">Number of rows</td>
+<td align="left">889</td>
+</tr>
+<tr class="odd">
+<td align="left">Number of columns</td>
+<td align="left">66</td>
+</tr>
+<tr class="even">
+<td align="left">_______________________</td>
+<td align="left"></td>
+</tr>
+<tr class="odd">
+<td align="left">Column type frequency:</td>
+<td align="left"></td>
+</tr>
+<tr class="even">
+<td align="left">character</td>
+<td align="left">64</td>
+</tr>
+<tr class="odd">
+<td align="left">numeric</td>
+<td align="left">2</td>
+</tr>
+<tr class="even">
+<td align="left">________________________</td>
+<td align="left"></td>
+</tr>
+<tr class="odd">
+<td align="left">Group variables</td>
+<td align="left">None</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Variable type: character</strong></p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">skim_variable</th>
+<th align="right">n_missing</th>
+<th align="right">complete_rate</th>
+<th align="right">min</th>
+<th align="right">max</th>
+<th align="right">empty</th>
+<th align="right">n_unique</th>
+<th align="right">whitespace</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">celebrate</td>
+<td align="right">0</td>
+<td align="right">1.00</td>
+<td align="right">2</td>
+<td align="right">3</td>
+<td align="right">0</td>
+<td align="right">2</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">main_dish</td>
+<td align="right">60</td>
+<td align="right">0.93</td>
+<td align="right">6</td>
+<td align="right">22</td>
+<td align="right">0</td>
+<td align="right">8</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="left">main_dish_other</td>
+<td align="right">858</td>
+<td align="right">0.03</td>
+<td align="right">4</td>
+<td align="right">85</td>
+<td align="right">0</td>
+<td align="right">28</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">main_prep</td>
+<td align="right">60</td>
+<td align="right">0.93</td>
+<td align="right">5</td>
+<td align="right">22</td>
+<td align="right">0</td>
+<td align="right">5</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="left">main_prep_other</td>
+<td align="right">850</td>
+<td align="right">0.04</td>
+<td align="right">5</td>
+<td align="right">33</td>
+<td align="right">0</td>
+<td align="right">24</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">stuffing</td>
+<td align="right">60</td>
+<td align="right">0.93</td>
+<td align="right">4</td>
+<td align="right">22</td>
+<td align="right">0</td>
+<td align="right">4</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="left">stuffing_other</td>
+<td align="right">858</td>
+<td align="right">0.03</td>
+<td align="right">4</td>
+<td align="right">46</td>
+<td align="right">0</td>
+<td align="right">24</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">cranberry</td>
+<td align="right">60</td>
+<td align="right">0.93</td>
+<td align="right">4</td>
+<td align="right">22</td>
+<td align="right">0</td>
+<td align="right">4</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="left">cranberry_other</td>
+<td align="right">866</td>
+<td align="right">0.03</td>
+<td align="right">3</td>
+<td align="right">61</td>
+<td align="right">0</td>
+<td align="right">22</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">gravy</td>
+<td align="right">60</td>
+<td align="right">0.93</td>
+<td align="right">2</td>
+<td align="right">3</td>
+<td align="right">0</td>
+<td align="right">2</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="left">side1</td>
+<td align="right">757</td>
+<td align="right">0.15</td>
+<td align="right">15</td>
+<td align="right">15</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">side2</td>
+<td align="right">681</td>
+<td align="right">0.23</td>
+<td align="right">7</td>
+<td align="right">7</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="left">side3</td>
+<td align="right">811</td>
+<td align="right">0.09</td>
+<td align="right">11</td>
+<td align="right">11</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">side4</td>
+<td align="right">484</td>
+<td align="right">0.46</td>
+<td align="right">4</td>
+<td align="right">4</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="left">side5</td>
+<td align="right">688</td>
+<td align="right">0.23</td>
+<td align="right">9</td>
+<td align="right">9</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">side6</td>
+<td align="right">702</td>
+<td align="right">0.21</td>
+<td align="right">11</td>
+<td align="right">11</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="left">side7</td>
+<td align="right">291</td>
+<td align="right">0.67</td>
+<td align="right">32</td>
+<td align="right">32</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">side8</td>
+<td align="right">711</td>
+<td align="right">0.20</td>
+<td align="right">19</td>
+<td align="right">19</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="left">side9</td>
+<td align="right">183</td>
+<td align="right">0.79</td>
+<td align="right">15</td>
+<td align="right">15</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">side10</td>
+<td align="right">225</td>
+<td align="right">0.75</td>
+<td align="right">14</td>
+<td align="right">14</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="left">side11</td>
+<td align="right">744</td>
+<td align="right">0.16</td>
+<td align="right">6</td>
+<td align="right">6</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">side12</td>
+<td align="right">712</td>
+<td align="right">0.20</td>
+<td align="right">15</td>
+<td align="right">15</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="left">side13</td>
+<td align="right">333</td>
+<td align="right">0.63</td>
+<td align="right">27</td>
+<td align="right">27</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">side14</td>
+<td align="right">791</td>
+<td align="right">0.11</td>
+<td align="right">22</td>
+<td align="right">22</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="left">side15</td>
+<td align="right">791</td>
+<td align="right">0.11</td>
+<td align="right">4</td>
+<td align="right">75</td>
+<td align="right">0</td>
+<td align="right">78</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">pie1</td>
+<td align="right">451</td>
+<td align="right">0.49</td>
+<td align="right">5</td>
+<td align="right">5</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="left">pie2</td>
+<td align="right">861</td>
+<td align="right">0.03</td>
+<td align="right">10</td>
+<td align="right">10</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">pie3</td>
+<td align="right">792</td>
+<td align="right">0.11</td>
+<td align="right">6</td>
+<td align="right">6</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="left">pie4</td>
+<td align="right">780</td>
+<td align="right">0.12</td>
+<td align="right">9</td>
+<td align="right">9</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">pie5</td>
+<td align="right">857</td>
+<td align="right">0.04</td>
+<td align="right">13</td>
+<td align="right">13</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="left">pie6</td>
+<td align="right">859</td>
+<td align="right">0.03</td>
+<td align="right">8</td>
+<td align="right">8</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">pie7</td>
+<td align="right">859</td>
+<td align="right">0.03</td>
+<td align="right">5</td>
+<td align="right">5</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="left">pie8</td>
+<td align="right">582</td>
+<td align="right">0.35</td>
+<td align="right">5</td>
+<td align="right">5</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">pie9</td>
+<td align="right">261</td>
+<td align="right">0.71</td>
+<td align="right">7</td>
+<td align="right">7</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="left">pie10</td>
+<td align="right">755</td>
+<td align="right">0.15</td>
+<td align="right">12</td>
+<td align="right">12</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">pie11</td>
+<td align="right">853</td>
+<td align="right">0.04</td>
+<td align="right">4</td>
+<td align="right">4</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="left">pie12</td>
+<td align="right">834</td>
+<td align="right">0.06</td>
+<td align="right">22</td>
+<td align="right">22</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">pie13</td>
+<td align="right">834</td>
+<td align="right">0.06</td>
+<td align="right">5</td>
+<td align="right">46</td>
+<td align="right">0</td>
+<td align="right">49</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="left">dessert1</td>
+<td align="right">795</td>
+<td align="right">0.11</td>
+<td align="right">13</td>
+<td align="right">13</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">dessert2</td>
+<td align="right">877</td>
+<td align="right">0.01</td>
+<td align="right">8</td>
+<td align="right">8</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="left">dessert3</td>
+<td align="right">784</td>
+<td align="right">0.12</td>
+<td align="right">8</td>
+<td align="right">8</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">dessert4</td>
+<td align="right">828</td>
+<td align="right">0.07</td>
+<td align="right">11</td>
+<td align="right">11</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="left">dessert5</td>
+<td align="right">733</td>
+<td align="right">0.18</td>
+<td align="right">10</td>
+<td align="right">10</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">dessert6</td>
+<td align="right">720</td>
+<td align="right">0.19</td>
+<td align="right">7</td>
+<td align="right">7</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="left">dessert7</td>
+<td align="right">852</td>
+<td align="right">0.04</td>
+<td align="right">5</td>
+<td align="right">5</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">dessert8</td>
+<td align="right">668</td>
+<td align="right">0.25</td>
+<td align="right">9</td>
+<td align="right">9</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="left">dessert9</td>
+<td align="right">796</td>
+<td align="right">0.10</td>
+<td align="right">13</td>
+<td align="right">13</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">dessert10</td>
+<td align="right">628</td>
+<td align="right">0.29</td>
+<td align="right">4</td>
+<td align="right">4</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="left">dessert11</td>
+<td align="right">776</td>
+<td align="right">0.13</td>
+<td align="right">22</td>
+<td align="right">22</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">dessert12</td>
+<td align="right">776</td>
+<td align="right">0.13</td>
+<td align="right">3</td>
+<td align="right">59</td>
+<td align="right">0</td>
+<td align="right">81</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="left">prayer</td>
+<td align="right">60</td>
+<td align="right">0.93</td>
+<td align="right">2</td>
+<td align="right">3</td>
+<td align="right">0</td>
+<td align="right">2</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">travel</td>
+<td align="right">60</td>
+<td align="right">0.93</td>
+<td align="right">59</td>
+<td align="right">80</td>
+<td align="right">0</td>
+<td align="right">4</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="left">watch_program</td>
+<td align="right">453</td>
+<td align="right">0.49</td>
+<td align="right">13</td>
+<td align="right">13</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">kids_table_age</td>
+<td align="right">60</td>
+<td align="right">0.93</td>
+<td align="right">2</td>
+<td align="right">13</td>
+<td align="right">0</td>
+<td align="right">12</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="left">hometown_friends</td>
+<td align="right">60</td>
+<td align="right">0.93</td>
+<td align="right">2</td>
+<td align="right">3</td>
+<td align="right">0</td>
+<td align="right">2</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">friendsgiving</td>
+<td align="right">60</td>
+<td align="right">0.93</td>
+<td align="right">2</td>
+<td align="right">3</td>
+<td align="right">0</td>
+<td align="right">2</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="left">black_friday</td>
+<td align="right">60</td>
+<td align="right">0.93</td>
+<td align="right">2</td>
+<td align="right">3</td>
+<td align="right">0</td>
+<td align="right">2</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">work_retail</td>
+<td align="right">60</td>
+<td align="right">0.93</td>
+<td align="right">2</td>
+<td align="right">3</td>
+<td align="right">0</td>
+<td align="right">2</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="left">work_black_friday</td>
+<td align="right">827</td>
+<td align="right">0.07</td>
+<td align="right">2</td>
+<td align="right">13</td>
+<td align="right">0</td>
+<td align="right">3</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">community_type</td>
+<td align="right">60</td>
+<td align="right">0.93</td>
+<td align="right">5</td>
+<td align="right">8</td>
+<td align="right">0</td>
+<td align="right">3</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="left">age</td>
+<td align="right">0</td>
+<td align="right">1.00</td>
+<td align="right">3</td>
+<td align="right">7</td>
+<td align="right">0</td>
+<td align="right">4</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">gender</td>
+<td align="right">0</td>
+<td align="right">1.00</td>
+<td align="right">4</td>
+<td align="right">6</td>
+<td align="right">0</td>
+<td align="right">2</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="left">family_income</td>
+<td align="right">0</td>
+<td align="right">1.00</td>
+<td align="right">12</td>
+<td align="right">20</td>
+<td align="right">0</td>
+<td align="right">10</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">us_region</td>
+<td align="right">20</td>
+<td align="right">0.98</td>
+<td align="right">7</td>
+<td align="right">18</td>
+<td align="right">0</td>
+<td align="right">9</td>
+<td align="right">0</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Variable type: numeric</strong></p>
+<table>
+<colgroup>
+<col width="11%" />
+<col width="6%" />
+<col width="8%" />
+<col width="8%" />
+<col width="6%" />
+<col width="6%" />
+<col width="6%" />
+<col width="6%" />
+<col width="6%" />
+<col width="6%" />
+<col width="25%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">skim_variable</th>
+<th align="right">n_missing</th>
+<th align="right">complete_rate</th>
+<th align="right">mean</th>
+<th align="right">sd</th>
+<th align="right">p0</th>
+<th align="right">p25</th>
+<th align="right">p50</th>
+<th align="right">p75</th>
+<th align="right">p100</th>
+<th align="left">hist</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">id</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">4.336742e+09</td>
+<td align="right">493604.25</td>
+<td align="right">4335943060</td>
+<td align="right">4336376803</td>
+<td align="right">4336802837</td>
+<td align="right">4337027180</td>
+<td align="right">4337954960</td>
+<td align="left">▅▃▇▂▂</td>
+</tr>
+<tr class="even">
+<td align="left">family_income_num</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">7.407762e+04</td>
+<td align="right">59360.74</td>
+<td align="right">0</td>
+<td align="right">25000</td>
+<td align="right">50000</td>
+<td align="right">100000</td>
+<td align="right">200000</td>
+<td align="left">▇▇▃▂▃</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>#There is a total of 8 variables used to predict the family income: &quot;celebrate&quot;, &quot;main_dish&quot;, &quot;main_prep&quot;, &quot;gender&quot;, &quot;age&quot;, &quot;gravy&quot;, &quot;us_region&quot;, &quot;community_type&quot;. All of them have less null values than others (&lt;100). Their values are simple enough to split in different categories.
+
+randomForest(family_income_num~celebrate + main_dish + main_prep + gravy, data=meals_income_num, na.action = na.omit)</code></pre>
 <pre><code>## 
 ## Call:
-##  randomForest(formula = family_income_num ~ celebrate + main_dish +      main_prep, data = meals_income_num, na.action = na.omit) 
+##  randomForest(formula = family_income_num ~ celebrate + main_dish +      main_prep + gravy, data = meals_income_num, na.action = na.omit) 
 ##                Type of random forest: regression
 ##                      Number of trees: 500
 ## No. of variables tried at each split: 1
 ## 
-##           Mean of squared residuals: 3447834622
-##                     % Var explained: 1.06</code></pre>
-<pre class="r"><code>randomForest(family_income_num~gender + age + gravy + us_region, data=meals_income_num, na.action = na.omit)</code></pre>
+##           Mean of squared residuals: 3433676161
+##                     % Var explained: 1.47</code></pre>
+<pre class="r"><code>randomForest(family_income_num~gender + age + community_type + us_region, data=meals_income_num, na.action = na.omit)</code></pre>
 <pre><code>## 
 ## Call:
-##  randomForest(formula = family_income_num ~ gender + age + gravy +      us_region, data = meals_income_num, na.action = na.omit) 
+##  randomForest(formula = family_income_num ~ gender + age + community_type +      us_region, data = meals_income_num, na.action = na.omit) 
 ##                Type of random forest: regression
 ##                      Number of trees: 500
 ## No. of variables tried at each split: 1
 ## 
-##           Mean of squared residuals: 3241607865
-##                     % Var explained: 6.38</code></pre>
-<pre class="r"><code>randomForest(family_income_num~celebrate + main_dish + main_prep + us_region + gravy, data=meals_income_num, na.action = na.omit)</code></pre>
+##           Mean of squared residuals: 3210079365
+##                     % Var explained: 7.29</code></pre>
+<pre class="r"><code>randomForest(family_income_num~celebrate + main_dish + main_prep + gravy + gender + age + us_region + community_type, data=meals_income_num, na.action = na.omit)</code></pre>
 <pre><code>## 
 ## Call:
-##  randomForest(formula = family_income_num ~ celebrate + main_dish +      main_prep + us_region + gravy, data = meals_income_num, na.action = na.omit) 
+##  randomForest(formula = family_income_num ~ celebrate + main_dish +      main_prep + gravy + gender + age + us_region + community_type,      data = meals_income_num, na.action = na.omit) 
 ##                Type of random forest: regression
 ##                      Number of trees: 500
-## No. of variables tried at each split: 1
+## No. of variables tried at each split: 2
 ## 
-##           Mean of squared residuals: 3398602627
-##                     % Var explained: 1.85</code></pre>
-<pre class="r"><code>#</code></pre>
+##           Mean of squared residuals: 3250722154
+##                     % Var explained: 6.12</code></pre>
+<pre class="r"><code>#Out of three predicted models, the model number 2 is the best model to predict family income. It has the highest %var explained (7.27) which means that this model has the highest proportion of family income variable that can be predicted by those variables used in function.</code></pre>
 </div>
 </div>
 

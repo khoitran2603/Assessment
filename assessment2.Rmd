@@ -111,7 +111,6 @@ meals_main %>% count(gravy)
 ```{r}
 meals_income_factor %>% count(family_income, sort = TRUE)
 meals_income_factor %>%
-  #mutate(family_income = fct_lump(family_income, 6, other_level = "$125,000 to $199,999" ), sort = TRUE) %>%
   group_by(family_income, celebrate) %>%
   summarise(n=n()) %>%
   mutate(family_income = fct_reorder(family_income, -n)) %>%
@@ -155,11 +154,14 @@ meals_income_num <- meals %>%
   filter(!is.na(family_income) & family_income != "Prefer not to answer") %>%
   mutate(family_income_num = parse_number(family_income))
 
-randomForest(family_income_num~celebrate + main_dish + main_prep, data=meals_income_num, na.action = na.omit)
-randomForest(family_income_num~gender + age + gravy + us_region, data=meals_income_num, na.action = na.omit)
-randomForest(family_income_num~celebrate + main_dish + main_prep + us_region + gravy, data=meals_income_num, na.action = na.omit)
+skim(meals_income_num)
+#There is a total of 8 variables used to predict the family income: "celebrate", "main_dish", "main_prep", "gender", "age", "gravy", "us_region", "community_type". All of them have less null values than others (<100). Their values are simple enough to split in different categories.
 
-#
+randomForest(family_income_num~celebrate + main_dish + main_prep + gravy, data=meals_income_num, na.action = na.omit)
+randomForest(family_income_num~gender + age + community_type + us_region, data=meals_income_num, na.action = na.omit)
+randomForest(family_income_num~celebrate + main_dish + main_prep + gravy + gender + age + us_region + community_type, data=meals_income_num, na.action = na.omit)
+
+#Out of three predicted models, the model number 2 is the best model to predict family income. It has the highest %var explained (7.27) which means that this model has the highest proportion of family income variable that can be predicted by those variables used in function.
 
 ```
 
